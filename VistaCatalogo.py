@@ -1,56 +1,45 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk
 
-def show_login_window():
-    login_window = tk.Toplevel()
-    login_window.title("Inicio de Sesión")
-    login_window.geometry("300x200")
-    login_window.configure(bg="#faffff")
-    
-    tk.Label(login_window, text="Nombre de usuario", bg="#faffff").pack(pady=5)
-    username_entry = tk.Entry(login_window)
-    username_entry.pack(pady=5)
-    
-    tk.Label(login_window, text="Contraseña", bg="#faffff").pack(pady=5)
-    password_entry = tk.Entry(login_window, show="*")
-    password_entry.pack(pady=5)
-    
-    def login():
-        username = username_entry.get()
-        password = password_entry.get()
-        # Aquí puedes verificar las credenciales con una base de datos o un conjunto de datos
-        if username == "admin" and password == "admin":
-            messagebox.showinfo("Éxito", "Inicio de sesión exitoso")
-            login_window.destroy()
-        else:
-            messagebox.showerror("Error", "Credenciales inválidas")
-    
-    tk.Button(login_window, text="Iniciar sesión", command=login, bg="#e1f5f5", fg="black").pack(pady=10)
 
-def menu():
+catalog_items = [
+    {"nombre": "Garrafa de avena pequeña", "descripcion": "garrafa de 2lt con una capacidad para 9 vasos de 7onz aprox", "precio": "$9.000"},
+    {"nombre": "Garrafa de avena de grande", "descripcion": "Garrafa de 4Lt con una capacidad para 21 vasos de 7onz aprox", "precio": "$15.000"},
+    {"nombre": "tarritos de avena personales", "descripcion": "Tarrito de 500Ml en presentacion personal", "precio": "$1.500"},
+    {"nombre": "Garrafa de mazato pequeña", "descripcion": "Garrafa de 2Lt con una capacidad para 9 y 1/2 vasos de 7onz aprox", "precio": "$7.000"},
+    {"nombre": "Garrafa de mazato grande", "descripcion": "Garrafa de 4Lt con una capacidad para 21 vasos de 7onz aprox", "precio": "$14.000"}
+]
+
+def create_catalog_window():
     root = tk.Tk()
-    root.title("Menú de opciones")
+    root.title("Catálogo de Productos")
     root.geometry("600x400")
-    root.configure(bg="#faffff")
+    root.configure(bg="#f4f4f4")
     
-    main_frame = tk.Frame(root, padx=10, pady=10, bg="#faffff")
+    main_frame = tk.Frame(root, padx=10, pady=10, bg="#f4f4f4")
     main_frame.pack(expand=True, fill='both')
     
-    label_font = ("Trajan Pro", 14)
-    button_font = ("Trajan Pro", 12)
-    button_bg = "#e1f5f5"
-    button_fg = "black"
+    canvas = tk.Canvas(main_frame, bg="#f4f4f4")
+    scrollbar = tk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas, bg="#f4f4f4")
     
-    tk.Label(main_frame, text="Registro, por favor iniciar sesión", bg="#e1f5f5", fg="black", font=label_font).pack(pady=10)
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+    )
+    canvas.create_window((0, 1), window=scrollable_frame, anchor="nw")
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+    canvas.configure(yscrollcommand=scrollbar.set)
     
-    button_frame = tk.Frame(main_frame, bg="black")
-    button_frame.pack(pady=10)
-    
-    button_style = {"bg": button_bg, "fg": button_fg, "font": button_font, "width": 25, "relief": "raised"}
-    
-    tk.Button(button_frame, text="Iniciar sesión", command=show_login_window, **button_style).pack(padx=5, pady=5)
-    tk.Button(button_frame, text="Salir", command=root.destroy, **button_style).pack(padx=5, pady=5)
+    for item in catalog_items:
+        product_frame = tk.Frame(scrollable_frame, padx=10, pady=10, bg="#e1f5f5", relief="raised")
+        product_frame.pack(fill="y", pady=5)
+        
+        tk.Label(product_frame, text=item["nombre"], font=("Arial", 14, "bold"), bg="#e1f5f5").pack(anchor="w")
+        tk.Label(product_frame, text=item["descripcion"], bg="#e1f5f5").pack(anchor="w")
+        tk.Label(product_frame, text=item["precio"], font=("Arial", 12, "italic"), bg="#e1f5f5").pack(anchor="w")
     
     root.mainloop()
 
-menu()
+create_catalog_window()
